@@ -1,0 +1,282 @@
+@use 'variables' as *;
+
+// 重置样式
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: $font-family;
+  font-size: $font-size-base;
+  color: $text-primary;
+  background-color: $bg-color;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: $primary-color;
+  text-decoration: none;
+  transition: $transition-fast;
+
+  &:hover {
+    color: $primary-dark;
+  }
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+// Element Plus 主题覆盖
+:root {
+  --el-color-primary: #{$primary-color};
+  --el-color-primary-light-3: #{$primary-light};
+  --el-color-primary-light-5: #8CD5B5;
+  --el-color-primary-light-7: #B8E6D0;
+  --el-color-primary-light-9: #E6F7EF;
+  --el-color-primary-dark-2: #{$primary-dark};
+
+  --el-color-success: #{$success-color};
+  --el-color-warning: #{$warning-color};
+  --el-color-danger: #{$danger-color};
+  --el-color-info: #{$info-color};
+
+  --el-font-family: #{$font-family};
+  --el-border-radius-base: #{$border-radius-base};
+}
+
+// 卡片样式
+.card {
+  background: $bg-white;
+  border-radius: $border-radius-base;
+  box-shadow: $shadow-light;
+  padding: $spacing-lg;
+  transition: $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-medium;
+  }
+}
+
+// 页面容器
+.page-container {
+  padding: $spacing-lg;
+  min-height: calc(100vh - #{$header-height});
+}
+
+// 页面标题
+.page-title {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+// 搜索表单区域
+.search-form {
+  background: $bg-white;
+  border-radius: $border-radius-base;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-light;
+}
+
+// 表格容器
+.table-container {
+  background: $bg-white;
+  border-radius: $border-radius-base;
+  padding: $spacing-lg;
+  box-shadow: $shadow-light;
+}
+
+// 分页居中
+.pagination-center {
+  display: flex;
+  justify-content: center;
+  margin-top: $spacing-lg;
+
+  .el-pagination {
+    justify-content: center;
+  }
+}
+
+// 按钮组
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+// 渐变背景 - 青春绿
+.gradient-bg {
+  background: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
+}
+
+// 文字渐变
+.gradient-text {
+  background: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: $border-lighter;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $border-color;
+  border-radius: 3px;
+
+  &:hover {
+    background: $text-secondary;
+  }
+}
+
+// 表单样式美化
+.el-form {
+  .el-form-item__label {
+    font-weight: 500;
+    color: $text-regular;
+  }
+}
+
+// 表格样式美化
+.el-table {
+  --el-table-border-color: #{$border-lighter};
+  --el-table-header-bg-color: #{$bg-color};
+
+  th.el-table__cell {
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+// 对话框美化
+.el-dialog {
+  border-radius: $border-radius-large !important;
+
+  .el-dialog__header {
+    border-bottom: 1px solid $border-lighter;
+    padding-bottom: $spacing-md;
+    margin-right: 0;
+  }
+
+  .el-dialog__body {
+    padding-top: $spacing-lg;
+  }
+
+  .el-dialog__footer {
+    border-top: 1px solid $border-lighter;
+    padding-top: $spacing-md;
+  }
+}
+
+// 消息提示美化
+.el-message {
+  border-radius: $border-radius-base !important;
+}
+
+// 面包屑样式
+.breadcrumb-wrapper {
+  background: $bg-white;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-md;
+  border-radius: $border-radius-base;
+  box-shadow: $shadow-light;
+
+  .el-breadcrumb {
+    font-size: $font-size-base;
+
+    .el-breadcrumb__inner {
+      color: $text-secondary;
+
+      &.is-link:hover {
+        color: $primary-color;
+      }
+    }
+
+    .el-breadcrumb__item:last-child {
+      .el-breadcrumb__inner {
+        color: $text-primary;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+// 空状态样式
+.empty-state {
+  text-align: center;
+  padding: $spacing-xl * 2;
+  color: $text-secondary;
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: $spacing-lg;
+    opacity: 0.5;
+  }
+
+  .empty-text {
+    font-size: $font-size-medium;
+  }
+}
+
+// 操作按钮图标样式
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  .icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// 标签页样式
+.el-tabs {
+  .el-tabs__item {
+    font-size: $font-size-base;
+
+    &.is-active {
+      font-weight: 600;
+    }
+  }
+}

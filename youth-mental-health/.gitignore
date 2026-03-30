@@ -1,0 +1,49 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads（保留目录但忽略上传的文件）
+uploads/*
+!uploads/.gitkeep
+
+# Compiled
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.rar
+
+# Gradle
+.gradle
+build/
+
+# Package Files
+*.tar.gz
+*.zip
+
+# Other
+*.bak
+*.swp
+*~

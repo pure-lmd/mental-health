@@ -1,0 +1,15 @@
+package com.ti.mental.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ti.mental.entity.Banner;
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+ * 轮播图Mapper接口
+ *
+ * @author Ti
+ * @date 2026-02-03
+ */
+@Mapper
+public interface BannerMapper extends BaseMapper<Banner> {
+}
