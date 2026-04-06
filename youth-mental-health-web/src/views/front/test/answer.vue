@@ -72,13 +72,19 @@ function nextQuestion() { if (currentIndex.value < questions.value.length - 1 &&
 
 async function handleSubmit() {
   if (!canSubmit.value) { ElMessage.warning('请完成所有题目'); return }
-  
+
   ElMessageBox.confirm('确定要提交测试吗？', '提示', { type: 'warning' }).then(async () => {
     submitLoading.value = true
     try {
       const answerDetail = Object.entries(answers.value).map(([qId, oId]) => ({ questionId: Number(qId), optionId: Number(oId) }))
       const res = await submitTest({ testId: testDetail.value.id, answers: answerDetail })
       ElMessage.success('提交成功')
+      
+      // 保存推荐数据到 sessionStorage
+      if (res.data.recommend) {
+        sessionStorage.setItem('testRecommend_' + res.data.id, JSON.stringify(res.data.recommend))
+      }
+      
       router.push(`/front/test/result/${res.data.id}`)
     } catch (e) { console.error(e) } finally { submitLoading.value = false }
   }).catch(() => {})

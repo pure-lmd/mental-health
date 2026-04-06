@@ -51,6 +51,12 @@ public class User implements Serializable {
     @Schema(description = "健康状态(0健康/1良好/2建议沟通)")
     private Integer healthStatus;
 
+    @Schema(description = "推荐偏好(疏导/预防/进阶)")
+    private String recommendPreference;
+
+    @Schema(description = "用户积分")
+    private Integer points;
+
     @Schema(description = "状态(0禁用/1启用)")
     private Integer status;
 

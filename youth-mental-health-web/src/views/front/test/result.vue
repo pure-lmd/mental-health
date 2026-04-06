@@ -1,7 +1,7 @@
 <template>
   <div class="test-result">
     <div class="breadcrumb-wrapper"><el-breadcrumb><el-breadcrumb-item :to="{ path: '/front/home' }">首页</el-breadcrumb-item><el-breadcrumb-item :to="{ path: '/front/test' }">心理测试</el-breadcrumb-item><el-breadcrumb-item>测试结果</el-breadcrumb-item></el-breadcrumb></div>
-    
+
     <div class="result-wrapper" v-loading="loading">
       <div class="result-card">
         <div class="result-header" :class="resultClass">
@@ -10,7 +10,7 @@
             <span class="label">分</span>
           </div>
         </div>
-        
+
         <div class="result-info">
           <h2>{{ record.testTitle }}</h2>
           <div class="result-status" :class="resultClass">
@@ -22,10 +22,59 @@
             <span><svg-icon name="time" :size="14" /> 测试时间：{{ formatDateTime(record.createTime) }}</span>
           </div>
         </div>
-        
+
         <div class="result-actions">
           <el-button type="primary" @click="$router.push('/front/test')"><svg-icon name="test" :size="14" /> 继续测试</el-button>
           <el-button @click="$router.push('/front/user/test-record')"><svg-icon name="record" :size="14" /> 查看记录</el-button>
+        </div>
+      </div>
+
+      <!-- 新增: 个性化推荐模块 -->
+      <div class="recommend-card" v-if="recommend">
+        <div class="recommend-header">
+          <h3>📚 为您推荐</h3>
+          <el-alert 
+            v-if="recommend.suggestMessage" 
+            :title="recommend.suggestMessage" 
+            type="warning" 
+            :closable="false"
+            show-icon
+          />
+        </div>
+
+        <!-- 推荐知识 -->
+        <div class="recommend-section" v-if="recommend.knowledgeList && recommend.knowledgeList.length > 0">
+          <h4>📖 推荐阅读</h4>
+          <div class="recommend-list">
+            <div class="recommend-item" v-for="item in recommend.knowledgeList" :key="item.id" @click="goToKnowledge(item.id)">
+              <img v-if="item.cover" :src="item.cover" :alt="item.title" />
+              <div class="item-info">
+                <h5>{{ item.title }}</h5>
+                <p>{{ item.summary }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 推荐活动 -->
+        <div class="recommend-section" v-if="recommend.activityList && recommend.activityList.length > 0">
+          <h4>🎯 推荐活动</h4>
+          <div class="recommend-list">
+            <div class="recommend-item" v-for="item in recommend.activityList" :key="item.id" @click="goToActivity(item.id)">
+              <img v-if="item.cover" :src="item.cover" :alt="item.title" />
+              <div class="item-info">
+                <h5>{{ item.title }}</h5>
+                <p>开始时间: {{ item.startTime }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI咨询建议 -->
+        <div class="ai-chat-suggest" v-if="recommend.suggestAiChat">
+          <el-button type="primary" size="large" @click="goToAiChat">
+            💬 立即与AI咨询师聊聊
+          </el-button>
         </div>
       </div>
     </div>
@@ -34,13 +83,16 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 import { getTestRecordDetail } from '@/api/front/test'
 import { formatDateTime, getHealthStatusText } from '@/utils/common'
 
 const route = useRoute()
+const router = useRouter()
 const loading = ref(false)
 const record = ref({})
+const recommend = ref(null)
 
 const resultClass = computed(() => {
   const r = record.value.result
@@ -63,31 +115,64 @@ const resultDescription = computed(() => {
   return '建议您与专业人士进行沟通，我们会帮助您更好地了解自己。'
 })
 
-async function fetchRecord() { loading.value = true; try { const res = await getTestRecordDetail(route.params.id); record.value = res.data } catch (e) { console.error(e) } finally { loading.value = false } }
+async function fetchRecord() {
+  loading.value = true
+  try {
+    const res = await getTestRecordDetail(route.params.id)
+    record.value = res.data
+    
+    // 优先从 sessionStorage 获取推荐数据（刚提交测试时保存的）
+    const recommendData = sessionStorage.getItem('testRecommend_' + route.params.id)
+    if (recommendData) {
+      recommend.value = JSON.parse(recommendData)
+      // 读取后删除，避免重复显示
+      sessionStorage.removeItem('testRecommend_' + route.params.id)
+    } else if (res.data.recommend) {
+      // 如果接口返回了推荐数据（兼容旧逻辑）
+      recommend.value = res.data.recommend
+    }
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
+}
+
+function goToKnowledge(id) {
+  router.push(`/front/knowledge/${id}`)
+}
+
+function goToActivity(id) {
+  router.push(`/front/activity/${id}`)
+}
+
+function goToAiChat() {
+  router.push('/front/ai-chat')
+}
 
 onMounted(() => { fetchRecord() })
 </script>
 
 <style lang="scss" scoped>
 .test-result {
-  .result-wrapper { display: flex; justify-content: center; }
-  
+  .result-wrapper { display: flex; justify-content: center; gap: $spacing-xl; flex-wrap: wrap; padding-bottom: $spacing-xl * 2; }
+
   .result-card {
     background: $bg-white;
     border-radius: $border-radius-large;
     overflow: hidden;
     width: 500px;
     box-shadow: $shadow-medium;
-    
+
     .result-header {
       padding: $spacing-xl * 2;
       display: flex;
       justify-content: center;
-      
+
       &.healthy { background: linear-gradient(135deg, #36B37E, #57D9A3); }
       &.good { background: linear-gradient(135deg, #FFAB00, #FFD740); }
       &.need-talk { background: linear-gradient(135deg, #FF5630, #FF8F73); }
-      
+
       .score-circle {
         width: 120px;
         height: 120px;
@@ -98,18 +183,18 @@ onMounted(() => { fetchRecord() })
         align-items: center;
         justify-content: center;
         color: #fff;
-        
+
         .score { font-size: 42px; font-weight: 700; }
         .label { font-size: $font-size-small; }
       }
     }
-    
+
     .result-info {
       padding: $spacing-xl;
       text-align: center;
-      
+
       h2 { font-size: $font-size-xl; color: $text-primary; margin-bottom: $spacing-md; }
-      
+
       .result-status {
         display: inline-flex;
         align-items: center;
@@ -119,17 +204,116 @@ onMounted(() => { fetchRecord() })
         font-size: $font-size-large;
         font-weight: 600;
         margin-bottom: $spacing-md;
-        
+
         &.healthy { background: rgba($success-color, 0.1); color: $success-color; }
         &.good { background: rgba($warning-color, 0.1); color: $warning-color; }
         &.need-talk { background: rgba($danger-color, 0.1); color: $danger-color; }
       }
-      
+
       .result-desc { color: $text-secondary; line-height: 1.6; margin-bottom: $spacing-md; }
       .meta { color: $text-placeholder; font-size: $font-size-small; span { display: flex; align-items: center; justify-content: center; gap: 4px; } }
     }
-    
+
     .result-actions { display: flex; justify-content: center; gap: $spacing-md; padding: 0 $spacing-xl $spacing-xl; }
+  }
+
+  // 新增: 推荐卡片样式
+  .recommend-card {
+    background: $bg-white;
+    border-radius: $border-radius-large;
+    padding: $spacing-xl;
+    width: 500px;
+    box-shadow: $shadow-medium;
+
+    .recommend-header {
+      margin-bottom: $spacing-lg;
+
+      h3 {
+        font-size: $font-size-xl;
+        color: $text-primary;
+        margin-bottom: $spacing-md;
+      }
+
+      .el-alert {
+        margin-bottom: $spacing-md;
+      }
+    }
+
+    .recommend-section {
+      margin-bottom: $spacing-lg;
+
+      h4 {
+        font-size: $font-size-large;
+        color: $text-primary;
+        margin-bottom: $spacing-md;
+        padding-bottom: $spacing-sm;
+        border-bottom: 2px solid $primary-color;
+      }
+
+      .recommend-list {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-md;
+      }
+
+      .recommend-item {
+        display: flex;
+        gap: $spacing-md;
+        padding: $spacing-md;
+        border-radius: $border-radius-base;
+        background: $bg-color;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+          box-shadow: $shadow-base;
+          transform: translateY(-2px);
+        }
+
+        img {
+          width: 80px;
+          height: 80px;
+          object-fit: cover;
+          border-radius: $border-radius-base;
+          flex-shrink: 0;
+        }
+
+        .item-info {
+          flex: 1;
+          overflow: hidden;
+
+          h5 {
+            font-size: $font-size-base;
+            color: $text-primary;
+            margin-bottom: $spacing-xs;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          p {
+            font-size: $font-size-small;
+            color: $text-secondary;
+            line-height: 1.5;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
+        }
+      }
+    }
+
+    .ai-chat-suggest {
+      text-align: center;
+      padding-top: $spacing-md;
+      border-top: 1px solid $border-color;
+
+      .el-button {
+        min-width: 200px;
+      }
+    }
   }
 }
 </style>

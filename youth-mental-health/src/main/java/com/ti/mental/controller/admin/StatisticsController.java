@@ -2,6 +2,7 @@ package com.ti.mental.controller.admin;
 
 import com.ti.mental.common.result.Result;
 import com.ti.mental.service.StatisticsService;
+import com.ti.mental.service.WarningService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +26,9 @@ public class StatisticsController {
 
     @Resource
     private StatisticsService statisticsService;
+
+    @Resource
+    private WarningService warningService;
 
     @Operation(summary = "获取概览数据")
     @GetMapping("/overview")
@@ -47,5 +52,29 @@ public class StatisticsController {
     @GetMapping("/activity")
     public Result<Map<String, Object>> activity() {
         return Result.success(statisticsService.getActivityStatistics());
+    }
+
+    @Operation(summary = "获取健康趋势分析")
+    @GetMapping("/health-trend")
+    public Result<Map<String, Object>> healthTrend() {
+        return Result.success(statisticsService.getHealthTrend());
+    }
+
+    @Operation(summary = "获取高风险用户预警列表")
+    @GetMapping("/warning-list")
+    public Result<List<Map<String, Object>>> warningList() {
+        return Result.success(warningService.getWarningUsers());
+    }
+
+    @Operation(summary = "获取活动效果评估")
+    @GetMapping("/activity-effect")
+    public Result<Map<String, Object>> activityEffect() {
+        return Result.success(statisticsService.getActivityEffect());
+    }
+
+    @Operation(summary = "获取科普效果评估")
+    @GetMapping("/knowledge-effect")
+    public Result<Map<String, Object>> knowledgeEffect() {
+        return Result.success(statisticsService.getKnowledgeEffect());
     }
 }

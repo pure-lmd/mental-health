@@ -5,7 +5,9 @@
       <article class="article-content">
         <h1 class="title">{{ detail.title }}</h1>
         <div class="meta"><span><svg-icon name="time" :size="14" /> {{ formatDateTime(detail.createTime) }}</span><span><svg-icon name="view" :size="14" /> {{ detail.viewCount || 0 }} 浏览</span></div>
-        <div v-if="detail.cover" class="cover-image"><el-image :src="detail.cover" fit="cover" style="width: 100%; max-height: 400px; border-radius: 8px;" /></div>
+        <div v-if="detail.cover" class="cover-image">
+          <img :src="detail.cover" :alt="detail.title" />
+        </div>
         <div class="article-body" v-html="detail.content"></div>
       </article>
     </div>

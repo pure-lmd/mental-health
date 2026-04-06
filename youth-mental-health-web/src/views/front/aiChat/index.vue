@@ -67,7 +67,8 @@
               <svg-icon name="ai" :size="20" />
             </el-avatar>
             <div class="message-content">
-              <div class="bubble">{{ msg.content }}<span v-if="msg.streaming" class="cursor-blink">|</span></div>
+              <div class="bubble markdown-content" v-html="renderMarkdown(msg.content)"></div>
+              <span v-if="msg.streaming" class="cursor-blink">|</span>
               <span class="time">{{ msg.time }}</span>
             </div>
             <el-avatar :size="36" v-if="msg.role === 'user'" :src="userInfo?.avatar">
@@ -115,6 +116,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import { sendMessageStream, getSessionList, deleteSession, getChatHistory } from '@/api/front/aiChat'
 import dayjs from 'dayjs'
+import MarkdownIt from 'markdown-it'
+
+const md = new MarkdownIt({
+  breaks: true,
+  linkify: true,
+  typographer: true
+})
 
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
@@ -135,6 +143,12 @@ function scrollToBottom() {
       messagesRef.value.scrollTop = messagesRef.value.scrollHeight
     }
   })
+}
+
+// 渲染Markdown内容
+function renderMarkdown(content) {
+  if (!content) return ''
+  return md.render(content)
 }
 
 // 加载会话列表
@@ -487,6 +501,61 @@ onMounted(() => {
           line-height: 1.6;
           white-space: pre-wrap;
           word-break: break-word;
+          
+          &.markdown-content {
+            white-space: normal;
+            
+            :deep(p) {
+              margin: 0.5em 0;
+              &:first-child { margin-top: 0; }
+              &:last-child { margin-bottom: 0; }
+            }
+            
+            :deep(ul), :deep(ol) {
+              margin: 0.5em 0;
+              padding-left: 1.5em;
+            }
+            
+            :deep(li) {
+              margin: 0.3em 0;
+              line-height: 1.6;
+            }
+            
+            :deep(strong) {
+              font-weight: 600;
+            }
+            
+            :deep(em) {
+              font-style: italic;
+            }
+            
+            :deep(code) {
+              background: rgba(0, 0, 0, 0.06);
+              padding: 2px 6px;
+              border-radius: 4px;
+              font-size: 0.9em;
+            }
+            
+            :deep(pre) {
+              background: rgba(0, 0, 0, 0.06);
+              padding: $spacing-sm;
+              border-radius: $border-radius-small;
+              overflow-x: auto;
+              margin: 0.5em 0;
+              
+              code {
+                background: none;
+                padding: 0;
+              }
+            }
+            
+            :deep(blockquote) {
+              border-left: 3px solid $primary-color;
+              padding-left: $spacing-sm;
+              margin: 0.5em 0;
+              color: $text-secondary;
+            }
+          }
         }
 
         .time {

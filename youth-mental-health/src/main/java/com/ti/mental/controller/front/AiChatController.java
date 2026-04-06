@@ -4,6 +4,7 @@ import com.ti.mental.common.constant.Constants;
 import com.ti.mental.common.result.Result;
 import com.ti.mental.entity.AiChat;
 import com.ti.mental.service.AiChatService;
+import com.ti.mental.service.EmotionAnalysisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -38,6 +39,9 @@ public class AiChatController {
     @Resource
     private ChatClient.Builder chatClientBuilder;
 
+    @Resource
+    private EmotionAnalysisService emotionAnalysisService;
+
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Operation(summary = "发送消息")
@@ -46,9 +50,12 @@ public class AiChatController {
         Long userId = (Long) request.getAttribute(Constants.CURRENT_USER_ID);
         String sessionId = params.get("sessionId");
         String message = params.get("message");
-        
+
+        // 情绪分析
+        emotionAnalysisService.analyzeAndWarn(userId, message);
+
         String reply = aiChatService.chat(userId, sessionId, message);
-        
+
         Map<String, Object> result = new HashMap<>();
         result.put("reply", reply);
         result.put("sessionId", sessionId);
@@ -61,6 +68,9 @@ public class AiChatController {
         Long userId = (Long) request.getAttribute(Constants.CURRENT_USER_ID);
         String message = params.get("message");
         String sessionId = params.get("sessionId");
+
+        // 情绪分析
+        emotionAnalysisService.analyzeAndWarn(userId, message);
 
         SseEmitter emitter = new SseEmitter(120000L); // 2分钟超时
 

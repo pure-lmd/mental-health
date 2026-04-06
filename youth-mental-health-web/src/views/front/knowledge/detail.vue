@@ -10,6 +10,12 @@
           <span><svg-icon name="view" :size="14" /> {{ detail.viewCount || 0 }} 浏览</span>
           <span><svg-icon name="collect" :size="14" /> {{ detail.collectCount || 0 }} 收藏</span>
         </div>
+        
+        <!-- 封面图片 -->
+        <div class="cover-image" v-if="detail.cover">
+          <img :src="detail.cover" :alt="detail.title" />
+        </div>
+        
         <div class="article-body" v-html="detail.content"></div>
         <div class="article-actions">
           <el-button :type="isCollected ? 'warning' : 'default'" @click="handleCollect">
@@ -116,6 +122,20 @@ onMounted(() => { fetchDetail() })
   .article-content {
     .title { font-size: 28px; font-weight: 600; color: $text-primary; margin-bottom: $spacing-md; }
     .meta { display: flex; gap: $spacing-lg; color: $text-secondary; font-size: $font-size-small; margin-bottom: $spacing-lg; padding-bottom: $spacing-lg; border-bottom: 1px solid $border-lighter; span { display: flex; align-items: center; gap: 4px; } }
+    
+    .cover-image {
+      margin-bottom: $spacing-xl;
+      border-radius: $border-radius-base;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        display: block;
+      }
+    }
+    
     .article-body { line-height: 1.8; color: $text-regular; font-size: $font-size-medium; margin-bottom: $spacing-xl; white-space: pre-wrap; }
     .article-actions { display: flex; gap: $spacing-md; padding-top: $spacing-lg; border-top: 1px solid $border-lighter; }
   }

@@ -90,7 +90,7 @@
     <footer class="footer">
       <div class="footer-container">
         <p>大学生心理健康管理系统 - 关爱大学生心理健康</p>
-        <p class="copyright">Copyright 2026 Ti. All Rights Reserved.</p>
+        <p class="copyright"> All Rights Reserved.</p>
       </div>
     </footer>
   </div>

@@ -11,6 +11,8 @@ import com.ti.mental.service.CategoryService;
 import com.ti.mental.service.CollectService;
 import com.ti.mental.service.CommentService;
 import com.ti.mental.service.KnowledgeService;
+import com.ti.mental.service.LearningRecordService;
+import com.ti.mental.service.PointsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -48,6 +50,12 @@ public class KnowledgeFrontController {
     @Resource
     private JwtUtil jwtUtil;
 
+    @Resource
+    private LearningRecordService learningRecordService;
+
+    @Resource
+    private PointsService pointsService;
+
     @Operation(summary = "获取分类列表")
     @GetMapping("/category/list")
     public Result<List<Category>> categoryList() {
@@ -70,7 +78,7 @@ public class KnowledgeFrontController {
         Knowledge knowledge = knowledgeService.getDetailAndIncrView(id);
         Map<String, Object> result = new HashMap<>();
         result.put("knowledge", knowledge);
-        
+
         // 检查是否已收藏（如果已登录）
         // 该接口被排除在拦截器之外，需手动解析token获取userId
         Long userId = null;
@@ -80,10 +88,16 @@ public class KnowledgeFrontController {
         }
         if (userId != null) {
             result.put("isCollected", collectService.hasCollected(userId, id, Constants.COLLECT_TYPE_KNOWLEDGE));
+            
+            // 新增: 记录学习行为(浏览)
+            learningRecordService.record(userId, 1, id, 1, 0);
+            
+            // 新增: 奖励积分(每次浏览都给)
+            pointsService.rewardForLearning(userId, id);
         } else {
             result.put("isCollected", false);
         }
-        
+
         return Result.success(result);
     }
 

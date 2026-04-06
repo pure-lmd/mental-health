@@ -37,4 +37,25 @@ public interface StatisticsService {
      * @return 活动统计
      */
     Map<String, Object> getActivityStatistics();
+
+    /**
+     * 获取健康趋势分析（近7天）
+     *
+     * @return 健康趋势
+     */
+    Map<String, Object> getHealthTrend();
+
+    /**
+     * 获取活动效果评估
+     *
+     * @return 活动效果
+     */
+    Map<String, Object> getActivityEffect();
+
+    /**
+     * 获取科普效果评估
+     *
+     * @return 科普效果
+     */
+    Map<String, Object> getKnowledgeEffect();
 }

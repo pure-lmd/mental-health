@@ -73,6 +73,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Result<Void> handleException(Exception e) {
         log.error("系统异常: ", e);
-        return Result.fail(ResultCode.ERROR.getCode(), "系统异常，请稍后重试");
+        // 打印完整堆栈信息到控制台
+        e.printStackTrace();
+        return Result.fail(ResultCode.ERROR.getCode(), "系统异常: " + e.getMessage());
     }
 }

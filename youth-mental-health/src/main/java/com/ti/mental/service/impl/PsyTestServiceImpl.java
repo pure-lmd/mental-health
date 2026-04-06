@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ti.mental.common.constant.Constants;
+import com.ti.mental.dto.RecommendVO;
 import com.ti.mental.entity.Option;
 import com.ti.mental.entity.PsyTest;
 import com.ti.mental.entity.Question;
@@ -15,7 +16,10 @@ import com.ti.mental.mapper.OptionMapper;
 import com.ti.mental.mapper.PsyTestMapper;
 import com.ti.mental.mapper.QuestionMapper;
 import com.ti.mental.mapper.TestRecordMapper;
+import com.ti.mental.service.LearningRecordService;
+import com.ti.mental.service.PointsService;
 import com.ti.mental.service.PsyTestService;
+import com.ti.mental.service.RecommendService;
 import com.ti.mental.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -45,6 +49,15 @@ public class PsyTestServiceImpl extends ServiceImpl<PsyTestMapper, PsyTest> impl
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RecommendService recommendService;
+
+    @Resource
+    private PointsService pointsService;
+
+    @Resource
+    private LearningRecordService learningRecordService;
 
     @Override
     public IPage<PsyTest> page(Integer pageNum, Integer pageSize, String title) {
@@ -171,6 +184,12 @@ public class PsyTestServiceImpl extends ServiceImpl<PsyTestMapper, PsyTest> impl
         // 更新用户健康状态
         userService.updateHealthStatus(userId, result);
 
+        // 新增: 奖励积分
+        pointsService.rewardForTest(userId, testId);
+
+        // 新增: 生成个性化推荐
+        RecommendVO recommend = recommendService.generateRecommend(userId, result);
+
         // 返回结果
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("id", record.getId());
@@ -180,6 +199,8 @@ public class PsyTestServiceImpl extends ServiceImpl<PsyTestMapper, PsyTest> impl
         resultMap.put("testTitle", test.getTitle());
         resultMap.put("healthThreshold", test.getHealthThreshold());
         resultMap.put("goodThreshold", test.getGoodThreshold());
+        // 新增: 返回推荐
+        resultMap.put("recommend", recommend);
         return resultMap;
     }
 }

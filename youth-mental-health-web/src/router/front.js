@@ -132,6 +132,12 @@ export default [
         name: 'UserTestRecord',
         component: () => import('@/views/front/user/testRecord.vue'),
         meta: { title: '测试记录' }
+      },
+      {
+        path: 'user/growth',
+        name: 'UserGrowth',
+        component: () => import('@/views/front/user/growth.vue'),
+        meta: { title: '成长轨迹' }
       }
     ]
   }

@@ -1,7 +1,29 @@
 <template>
   <div class="profile-page">
     <div class="breadcrumb-wrapper"><el-breadcrumb><el-breadcrumb-item :to="{ path: '/front/home' }">首页</el-breadcrumb-item><el-breadcrumb-item>个人信息</el-breadcrumb-item></el-breadcrumb></div>
-    
+
+    <!-- 新增: 积分和快捷入口卡片 -->
+    <div class="quick-access">
+      <div class="points-card">
+        <div class="points-icon">🏆</div>
+        <div class="points-info">
+          <div class="points-value">{{ formData.points || 0 }}</div>
+          <div class="points-label">当前积分</div>
+        </div>
+      </div>
+      <div class="quick-links">
+        <el-button @click="$router.push('/front/user/growth')">
+          <svg-icon name="chart" :size="14" /> 成长轨迹
+        </el-button>
+        <el-button @click="$router.push('/front/user/test-record')">
+          <svg-icon name="record" :size="14" /> 测试记录
+        </el-button>
+        <el-button @click="$router.push('/front/test')">
+          <svg-icon name="test" :size="14" /> 开始测试
+        </el-button>
+      </div>
+    </div>
+
     <div class="profile-wrapper">
       <el-card class="profile-card">
         <template #header><div class="card-header"><svg-icon name="user" :size="18" /><span>个人信息</span></div></template>
@@ -24,7 +46,7 @@
           <el-form-item><el-button type="primary" :loading="submitLoading" @click="handleSubmit"><svg-icon name="save" :size="14" /> 保存修改</el-button></el-form-item>
         </el-form>
       </el-card>
-      
+
       <el-card class="password-card">
         <template #header><div class="card-header"><svg-icon name="lock" :size="18" /><span>修改密码</span></div></template>
         <el-form ref="pwdFormRef" :model="pwdData" :rules="pwdRules" label-width="100px">
@@ -93,8 +115,70 @@ onMounted(() => { fetchUserInfo() })
 </script>
 
 <style lang="scss" scoped>
-.profile-page { .profile-wrapper { display: grid; grid-template-columns: repeat(2, 1fr); gap: $spacing-lg; }
+.profile-page { 
+  // 新增: 快捷入口样式
+  .quick-access {
+    margin-bottom: $spacing-lg;
+    display: flex;
+    gap: $spacing-lg;
+    align-items: stretch;
+
+    .points-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: $border-radius-large;
+      padding: $spacing-xl;
+      display: flex;
+      align-items: center;
+      gap: $spacing-lg;
+      color: #fff;
+      min-width: 250px;
+      box-shadow: $shadow-medium;
+
+      .points-icon {
+        font-size: 48px;
+      }
+
+      .points-info {
+        flex: 1;
+
+        .points-value {
+          font-size: 36px;
+          font-weight: 700;
+          margin-bottom: $spacing-xs;
+        }
+
+        .points-label {
+          font-size: $font-size-base;
+          opacity: 0.9;
+        }
+      }
+    }
+
+    .quick-links {
+      flex: 1;
+      background: $bg-white;
+      border-radius: $border-radius-large;
+      padding: $spacing-xl;
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      box-shadow: $shadow-base;
+
+      .el-button {
+        flex: 1;
+      }
+    }
+  }
+
+  .profile-wrapper { display: grid; grid-template-columns: repeat(2, 1fr); gap: $spacing-lg; }
   .card-header { display: flex; align-items: center; gap: $spacing-sm; font-size: $font-size-medium; font-weight: 600; }
   .avatar-uploader { :deep(.el-upload) { border: 1px dashed $border-color; border-radius: 6px; cursor: pointer; overflow: hidden; transition: border-color 0.3s; &:hover { border-color: $primary-color; } } .avatar { width: 100px; height: 100px; display: block; object-fit: cover; } .avatar-uploader-icon { width: 100px; height: 100px; font-size: 28px; color: $text-placeholder; } } }
-@media (max-width: 768px) { .profile-page .profile-wrapper { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { 
+  .profile-page {
+    .quick-access {
+      flex-direction: column;
+    }
+    .profile-wrapper { grid-template-columns: 1fr; } 
+  }
+}
 </style>
